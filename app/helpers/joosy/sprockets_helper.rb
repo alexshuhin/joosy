@@ -14,10 +14,12 @@ module Joosy::SprocketsHelper
   end
 
   def require_joosy_preloader_for(app_asset, options={})
-    preloader_asset = "joosy/preloaders/#{options[:preloader] || 'caching'}"
+    preloader_asset = "joosy/preloaders/#{options[:preloader]}"
     force_preloader = options[:force] || false
 
-    if force_preloader
+    if options[:preloader].blank? || options[:preloader] == 'inline'
+      require_asset app_asset
+    elsif force_preloader
       require_asset preloader_asset
     else
       require_asset Rails.env == 'development' ? app_asset : preloader_asset

@@ -14,7 +14,6 @@ module Joosy
           end
         end
       end
-
     end
   end
 end
