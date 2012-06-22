@@ -2,14 +2,7 @@
 <html>
   <head>
     <title><%= file_path %></title>
-
-    <script type="text/javascript">
-      window.joosy = {
-        libraries: <%= "<%= extract_sources_and_sizes_from_include_tag('#{file_path}') %"+">" %>,
-        environment: '<%= "<%= Rails.env.to_s %"+">" %>'
-      };
-    </script>
-
+    <%= "<%= initialize_joosy '#{file_path}' %"+">" %>
     <%= "<%= stylesheet_link_tag 'application' %"+">" %>
     <%= "<%= csrf_meta_tags %"+">" %>
   </head>

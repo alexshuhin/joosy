@@ -33,6 +33,13 @@ Joosy.Router =
   #
   restrictPattern: false
 
+  consume: (routes) ->
+    data = {}
+    Object.extended(routes).each (path, page) ->
+      data[path] = "#{page[0]}.#{page[1]}Page"
+
+    @map data
+
   #
   # Set the restriction pattern. If the requested url does not match this it
   # will not load. Set `false` to avoid check.
@@ -106,6 +113,13 @@ Joosy.Router =
 
     Object.each routes, (path, response) =>
       path = (namespace + path).replace /\/{2,}/, '/'
+      
+      if Object.isString(response)
+        name  = response.split '.'
+        space = window
+        space = space[part] ?= {} for part in name
+        response = space
+
       if response && (Object.isFunction(response) || response.prototype?)
         Joosy.Module.merge @routes, @__prepareRoute(path, response)
       else

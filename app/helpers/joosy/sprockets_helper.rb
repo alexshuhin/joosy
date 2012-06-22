@@ -1,6 +1,31 @@
 require 'uri'
 
 module Joosy::SprocketsHelper
+  def initialize_joosy(name)
+    result  = javascript_tag(joosy_libraries name)
+    result += javascript_tag(joosy_bootstrap) unless Rails.env.production?
+    result
+  end
+
+  def joosy_libraries(name)
+    libraries = extract_sources_and_sizes_from_include_tag(name).to_json.html_safe
+
+    <<-eos
+      window.joosy = {
+        libraries: #{libraries}
+      }
+    eos
+  end
+
+  def joosy_bootstrap
+    routes = Joosy::SprocketsHelper.routes.to_json.html_safe
+
+    <<-eos
+      window.joosy.routes = #{routes}
+      window.joosy.environment = '#{Rails.env.to_s}'
+    eos
+  end
+
   def extract_sources_and_sizes_from_include_tag(name)
     code = javascript_include_tag name
     resources = code.scan(/(?:href|src)=['"]([^'"]+)['"]/).flatten
@@ -10,7 +35,7 @@ module Joosy::SprocketsHelper
       path = ::Rails.root.to_s + "/public" + uri.path
       size = File.size(path) rescue 0
       [resource, size]
-    end.to_json.html_safe
+    end
   end
 
   def require_joosy_preloader_for(app_asset, options={})
@@ -26,7 +51,7 @@ module Joosy::SprocketsHelper
     end
   end
 
-  def self.joosy_resources(namespaces=nil)
+  def self.resources(namespaces=nil)
     predefined = {}
     filtered_resources = Joosy::Rails::Engine.resources
     if namespaces
@@ -39,5 +64,26 @@ module Joosy::SprocketsHelper
       predefined[joosy_namespace] = resources
     end
     predefined
+  end
+
+  def self.routes
+    backend_routes = Rails.application.routes.routes.select do |x| 
+      method = x.constraints[:request_method]
+      source = x.app
+
+      if 
+        (!method.blank? && method != /^GET$/) ||
+        (!source.is_a?(ActionDispatch::Routing::RouteSet::Dispatcher)) ||
+        (!x.defaults.has_key?(:action) || !x.defaults.has_key?(:controller))
+          false
+      else
+        true
+      end
+    end
+
+    routes = Hash[backend_routes.map do |x|
+      page = [x.defaults[:controller].camelize.gsub('::', '.'), x.defaults[:action].camelize]
+      [x.path.spec.to_s.gsub('(.:format)', ''), page]
+    end]
   end
 end

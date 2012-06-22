@@ -177,3 +177,10 @@
       Joosy.Modules.Log.debugAs space, "Define #{collectionName}"
       space[collectionName] = class extends Joosy.Resource.RESTCollection
         @model space[className]
+
+  definePages: (routes) ->
+    Object.extended(routes).values().unique().each (page) ->
+      Joosy.namespace page[0], ->
+        @[page[1]+"Page"] = class extends ApplicationPage
+          @layout ApplicationLayout
+          @view   page[1].underscore()

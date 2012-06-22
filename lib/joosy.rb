@@ -11,6 +11,6 @@ require 'i18n-js'
 
 module Joosy
   def self.resources(namespaces=nil)
-    Joosy::SprocketsHelper.joosy_resources(namespaces).to_json
+    Joosy::SprocketsHelper.resources(namespaces).to_json
   end
 end

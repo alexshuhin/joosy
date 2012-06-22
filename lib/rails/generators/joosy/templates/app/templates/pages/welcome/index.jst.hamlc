@@ -1,4 +1,4 @@
-#wrapper
+#wrapper{:style => 'text-align: center'}
   #content
     %h1 Welcome aboard
     %h2{:style => 'margin-bottom: 30px'} You’re still riding Ruby on Rails.

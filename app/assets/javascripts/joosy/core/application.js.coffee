@@ -25,6 +25,7 @@ Joosy.Application =
     @[key] = value for key, value of options
     @templater = new Joosy.Templaters.RailsJST @name
 
+    Joosy.definePages window.joosy.routes
     Joosy.Router.__setupRoutes()
 
     @sandboxSelector = Joosy.uuid()

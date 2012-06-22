@@ -33,7 +33,7 @@ class Joosy.Layout extends Joosy.Module
   @include Joosy.Modules.WidgetsManager
   @include Joosy.Modules.Filters
 
-  @view 'default'
+  @view 'application'
 
   #
   # Sets the method which will controll the painting preparation proccess.
